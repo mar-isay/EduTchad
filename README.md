@@ -1,37 +1,41 @@
-<<<<<<< HEAD
-# Campus Tchad: Yapay Zeka Destekli Bireysel Akademik Gelişim Platformu
+# 🎓 EduTchad - Yapay Zeka Destekli Akademik Gelişim Platformu
 
-Campus Tchad, öğrencilerin akademik gelişim süreçlerini akıllı asistan desteğiyle optimize etmeyi amaçlayan, çok dilli (Fransızca, Türkçe, Arapça) kurumsal bir bireysel yapay zeka projesidir.
+EduTchad, Çad'daki üniversite ve yükseköğrenim öğrencilerinin akademik süreçlerini optimize etmek, ders materyallerini dijitalleştirmek ve modern bir eğitim ekosistemi oluşturmak amacıyla geliştirilmiş, çok dilli (Fransızca, Türkçe, İngilizce, Arapça) ve yapay zeka entegrasyonlu modern bir web platformudur.
 
-## 🚀 Proje Özellikleri
-- **Esnek Kayıt Politikası:** Kullanıcılar sadece e-posta ve şifre ile kayıt olabilir. Okul/Üniversite seçimi tamamen isteğe bağlıdır (Sıfır Zorunluluk İlkesi).
-- **Yapay Zeka Motoru:** Google Gemini API entegrasyonu ile yüklenen akademik dokümanları özetleme ve metne özel akıllı soru-cevap asistanlığı.
-- **Çok Dillilik Altyapısı:** Tüm arayüz butonları ve yapay zeka yanıtları FR, TR ve AR dillerinde senkronize çalışır.
+## 🚀 Teknolojik Altyapı
+- **Frontend:** React (Vite), i18next (Çok Dilli Altyapı), Tailwind / Özel CSS Mimarisi
+- **Tema:** Gece Modu (Dark Mode) odaklı, ekrana tam oturan (Full Screen) duyarlı tasarım
+- **Dil Desteği:** Sağdan Sola (RTL) Arapça akış desteği dahil 4 resmi dil simetrisi
 
-## 🛠️ Teknolojik Mimari (Tech Stack)
-- **Frontend:** React.js (Vite)
-- **Backend:** FastAPI (Python)
-- **Veritabanı:** PostgreSQL
-- **Yapay Zeka:** Google Gemini API
+## 🧠 Platform Mimarisi
 
-## 🧑‍💻 Geliştirici
-- **Issa Abakar Mahamat** 
-=======
-# Campus Tchad: Yapay Zeka Destekli Bireysel Akademik Gelişim Platformu
+### 1. 🤖 Yapay Zeka Merkezi (AI Hub)
+- **AI Ders Asistanı:** Akademik konularda öğrencilere anlık rehberlik sunan akıllı modül.
+- **PDF Analizi:** Uzun ders dökümanlarını saniyeler içinde analiz edip özetleyen sistem.
+- **Soru Çözme:** Formül ve problemlerin fotoğraflarını adım adım analitik çözüme kavuşturan altyapı.
+- **Metin Düzenleme:** Akademik makale ve ödev metinlerini kurumsal standartlara göre optimize eden araç.
+- **Çalışma Koçu:** Kişiselleştirilmiş haftalık çalışma planları ve motivasyon takibi üreten algoritma.
+- **Sesli AI:** Yapay zeka ile sesli konuşarak ders tekrarı yapma imkanı.
 
-Campus Tchad, öğrencilerin akademik gelişim süreçlerini akıllı asistan desteğiyle optimize etmeyi amaçlayan, çok dilli (Fransızca, Türkçe, Arapça) kurumsal bir bireysel yapay zeka projesidir.
+### 2. 🎓 Öğrenci Merkezi
+- **Not Yükle & Paylaş:** Öğrencilerin kendi dökümanlarını toplulukla paylaşabileceği alan.
+- **Kişisel Arşiv:** Güvenli ve bulut tabanlı kişisel ders materyali klasörü.
+- **Kampüs PDF Kütüphanesi:** Doğrulanmış ve kampüs genelinde paylaşılan PDF dökümanları.
+- **Gelişmiş Sohbet:** Öğrenciler arası birebir özel mesajlaşma ve toplu ders çalışma grubu sohbet odaları.
 
-## 🚀 Proje Özellikleri
-- **Esnek Kayıt Politikası:** Kullanıcılar sadece e-posta ve şifre ile kayıt olabilir. Okul/Üniversite seçimi tamamen isteğe bağlıdır (Sıfır Zorunluluk İlkesi).
-- **Yapay Zeka Motoru:** Google Gemini API entegrasyonu ile yüklenen akademik dokümanları özetleme ve metne özel akıllı soru-cevap asistanlığı.
-- **Çok Dillilik Altyapısı:** Tüm arayüz butonları ve yapay zeka yanıtları FR, TR ve AR dillerinde senkronize çalışır.
+## 📦 Kurulum ve Yerelde Çalıştırma
 
-## 🛠️ Teknolojik Mimari (Tech Stack)
-- **Frontend:** React.js (Vite)
-- **Backend:** FastAPI (Python)
-- **Veritabanı:** PostgreSQL
-- **Yapay Zeka:** Google Gemini API
+Projenin ön yüzünü yerel bilgisayarınızda ayağa kaldırmak için aşağıdaki adımları izleyin:
 
-## 🧑‍💻 Geliştirici
-- **Issa Abakar Mahamat** 
->>>>>>> 1ce19ab (feat: fastapi ana uygulama yapısı ve esnek kayit api endpoint'i eklendi)
+```bash
+# Projeyi klonlayın
+git clone <github-depo-linkiniz>
+
+# Frontend dizinine girin
+cd frontend
+
+# Gerekli paketleri yükleyin
+npm install
+
+# Geliştirme sunucusunu başlatın
+npm run dev
