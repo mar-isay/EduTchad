@@ -61,7 +61,6 @@ const resources = {
       privacy_title: "Gizlilik ve KVKK",
       privacy_text: "EduTchad, gizliliğinize önem verir. Kayıt esnasında girdiğiniz ad, e-posta ve üniversite bilgileri sadece akademik gelişim süreçlerinizi optimize etmek amacıyla güvenli sunucularda saklanır ve üçüncü taraflarla asla paylaşılmaz.",
       
-      // İletişim Modal Başlıkları (TR)
       contact_title: "İletişim Bilgileri",
       contact_name: "İsim",
       contact_institution: "Kurum",
@@ -70,7 +69,11 @@ const resources = {
       contact_email: "E-posta",
       contact_address: "Adres",
       dept: "Bilgisayar Mühendisliği",
-      uni_name: "Necmettin Erbakan Üniversitesi"
+      uni_name: "Necmettin Erbakan Üniversitesi",
+
+      // Bildirimler
+      notifications: "Bildirimler",
+      no_notifications: "Şu an yeni bildiriminiz yok."
     }
   },
   en: {
@@ -132,7 +135,6 @@ const resources = {
       privacy_title: "Privacy Policy",
       privacy_text: "EduTchad values your privacy. Your name, email, and university info provided during registration are securely stored to enhance your academic workflow and are never shared with third parties.",
       
-      // İletişim Modal Başlıkları (EN)
       contact_title: "Contact Information",
       contact_name: "Name",
       contact_institution: "Institution",
@@ -141,7 +143,11 @@ const resources = {
       contact_email: "Email",
       contact_address: "Address",
       dept: "Computer Engineering",
-      uni_name: "Necmettin Erbakan University"
+      uni_name: "Necmettin Erbakan University",
+
+      // Bildirimler
+      notifications: "Notifications",
+      no_notifications: "You have no new notifications."
     }
   },
   fr: {
@@ -203,7 +209,6 @@ const resources = {
       privacy_title: "Confidentialité",
       privacy_text: "EduTchad respecte votre vie privée. Votre nom, e-mail et informations universitaires fournis sont stockés en toute sécurité pour optimiser votre flux académique et ne sont jamais partagés.",
       
-      // İletişim Modal Başlıkları (FR)
       contact_title: "Informations de Contact",
       contact_name: "Nom",
       contact_institution: "Institution",
@@ -212,7 +217,11 @@ const resources = {
       contact_email: "E-mail",
       contact_address: "Adresse",
       dept: "Génie Informatique",
-      uni_name: "Université Necmettin Erbakan"
+      uni_name: "Université Necmettin Erbakan",
+
+      // Bildirimler
+      notifications: "Notifications",
+      no_notifications: "Vous n'avez pas de nouvelles notifications."
     }
   },
   ar: {
@@ -274,7 +283,6 @@ const resources = {
       privacy_title: "سياسة الخصوصية",
       privacy_text: "تهتم EduTchad بخصوصيتك. يتم تخزين اسمك وبريدك الإلكتروني ومعلوماتك الجامعية بأمان لتحسين سير عملك الأكاديمي ولا يتم مشاركتها مطلقًا.",
       
-      // İletişim Modal Başlıkları (AR)
       contact_title: "معلومات الاتصال",
       contact_name: "الاسم",
       contact_institution: "المؤسسة",
@@ -283,7 +291,11 @@ const resources = {
       contact_email: "البريد الإلكتروني",
       contact_address: "العنوان",
       dept: "هندسة الكمبيوتر",
-      uni_name: "جامعة نجم الدين أربكان"
+      uni_name: "جامعة نجم الدين أربكان",
+
+      // Bildirimler
+      notifications: "الإشعارات",
+      no_notifications: "ليس لديك إشعارات جديدة."
     }
   }
 };

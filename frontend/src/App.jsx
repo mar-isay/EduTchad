@@ -18,7 +18,6 @@ const SvgIcons = {
   Pdf: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>,
   Chat: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" style={{ flexShrink: 0 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
   
-  // İletişim İkonları
   ContactUser: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" style={{ flexShrink: 0, marginRight: '6px', marginLeft: '6px' }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
   ContactSchool: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" style={{ flexShrink: 0, marginRight: '6px', marginLeft: '6px' }}><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>,
   ContactDept: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" style={{ flexShrink: 0, marginRight: '6px', marginLeft: '6px' }}><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>,
@@ -33,10 +32,13 @@ function App() {
   const [isRegister, setIsRegister] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   
-  // Alt Menü Tıklamaları İçin Durum Yönetimi (Modallar)
-  const [activeModal, setActiveModal] = useState(null); // 'terms', 'privacy', 'contact'
+  // Bildirimlerin olup olmadığını kontrol eden state (Şu an bildirim yok = false)
+  const [hasNotifications, setHasNotifications] = useState(false);
+  
+  const [activeModal, setActiveModal] = useState(null); 
   const [robotChecked, setRobotChecked] = useState(false);
 
   const changeLanguage = (lng) => { i18n.changeLanguage(lng); };
@@ -79,18 +81,44 @@ function App() {
       
       {/* 1. NAVIGASYON BARI */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 40px', backgroundColor: theme.navBg, borderBottom: `1px solid ${theme.border}`, zIndex: 10, width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => setShowAuthForm(false)}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '22px', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => { setShowAuthForm(false); setShowProfile(false); setShowNotifications(false); }}>
           <AbstractLogo />
           EduTchad
         </div>
         
         <div style={{ display: 'flex', gap: '20px' }}>
-          <button style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: theme.iconBg, border: 'none', color: theme.textMain, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          {/* ANA SAYFA BUTONU */}
+          <button 
+            onClick={() => { setShowAuthForm(false); setShowProfile(false); setShowNotifications(false); }} 
+            title={t('back_home')}
+            style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: theme.iconBg, border: 'none', color: theme.textMain, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           </button>
-          <button style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: theme.iconBg, border: 'none', color: theme.textMain, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          </button>
+          
+          {/* BİLDİRİM BUTONU VE AÇILIR MENÜSÜ */}
+          <div style={{ position: 'relative' }}>
+            <button 
+              onClick={() => { setShowNotifications(!showNotifications); setShowProfile(false); }} 
+              style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: theme.iconBg, border: 'none', color: theme.textMain, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              {/* Kırmızı Bildirim Noktası (Sadece hasNotifications true ise görünür) */}
+              {hasNotifications && (
+                <span style={{ position: 'absolute', top: '10px', right: '12px', width: '8px', height: '8px', backgroundColor: '#ef4444', borderRadius: '50%', border: `2px solid ${theme.iconBg}` }}></span>
+              )}
+            </button>
+
+            {showNotifications && (
+              <div style={{ position: 'absolute', top: '50px', [appDirection === 'rtl' ? 'left' : 'right']: '0', backgroundColor: theme.cardBg, border: `1px solid ${theme.border}`, padding: '20px', borderRadius: '12px', width: '280px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)', zIndex: 50, textAlign: appDirection === 'rtl' ? 'right' : 'left' }}>
+                <h4 style={{ margin: '0 0 10px 0', color: theme.textMain, fontSize: '15px' }}>🔔 {t('notifications')}</h4>
+                <hr style={{ borderColor: theme.border, margin: '10px 0' }} />
+                <div style={{ color: theme.textMuted, fontSize: '13px', textAlign: 'center', padding: '15px 0' }}>
+                  {t('no_notifications')}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* GECE / GÜNDÜZ MODU BUTONU */}
           <button onClick={() => setIsDark(!isDark)} style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: theme.iconBg, border: `1px solid ${theme.primary}`, color: theme.textMain, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             {isDark ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>}
           </button>
@@ -105,7 +133,7 @@ function App() {
           </div>
 
           <div style={{ position: 'relative' }}>
-            <button onClick={() => setShowProfile(!showProfile)} style={{ backgroundColor: theme.primary, color: '#ffffff', border: 'none', padding: '10px 24px', borderRadius: '24px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); }} style={{ backgroundColor: theme.primary, color: '#ffffff', border: 'none', padding: '10px 24px', borderRadius: '24px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               {t('profile')}
             </button>
@@ -375,8 +403,8 @@ function App() {
         </div>
       </footer>
 
-      {/* 4. SABİT GÖRÜŞ LAMBASI (Daha yukarı kaldırıldı: bottom '40px' -> '105px') */}
-      <div style={{ position: 'fixed', bottom: '105px', [appDirection === 'rtl' ? 'left' : 'right']: '40px', zIndex: 100 }}>
+      {/* 4. SABİT GÖRÜŞ LAMBASI - DAHA DA YUKARIDA (130px) */}
+      <div style={{ position: 'fixed', bottom: '130px', [appDirection === 'rtl' ? 'left' : 'right']: '40px', zIndex: 100 }}>
         <button onClick={() => setShowFeedbackModal(true)} style={{ width: '54px', height: '54px', borderRadius: '50%', backgroundColor: '#eab308', color: '#000000', border: 'none', cursor: 'pointer', boxShadow: '0 4px 20px rgba(234, 179, 8, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
           💡
         </button>
@@ -390,7 +418,7 @@ function App() {
             <textarea placeholder={t('feedback_placeholder')} style={{ width: '100%', height: '120px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMain, padding: '10px', boxSizing: 'border-box', resize: 'none' }}></textarea>
             <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
               <button onClick={() => setShowFeedbackModal(false)} style={{ flex: 1, padding: '10px', backgroundColor: theme.iconBg, color: theme.textMain, border: 'none', borderRadius: '6px', cursor: 'pointer' }}>{t('close')}</button>
-              <button onClick={() => setShowFeedbackModal(false)} style={{ flex: 1, padding: '10px', backgroundColor: '#eab308', color: '#00', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>{t('send')}</button>
+              <button onClick={() => setShowFeedbackModal(false)} style={{ flex: 1, padding: '10px', backgroundColor: '#eab308', color: '#000', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>{t('send')}</button>
             </div>
           </div>
         </div>
