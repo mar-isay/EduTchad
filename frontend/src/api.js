@@ -40,3 +40,30 @@ export const chatWithAI = async (prompt, lang) => {
 };
 
 export default api;
+
+// Döküman Yükleme Fonksiyonu (Multipart Form Data)
+export const uploadDocument = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/documents/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.detail || "UPLOAD_FAILED";
+    }
+  };
+  
+  // PDF/Döküman Analiz ve Özetleme Fonksiyonu
+  export const analyzePDFDocument = async (filename, lang) => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/api/ai/analyze-pdf?filename=${encodeURIComponent(filename)}&lang=${lang}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.detail || "AI_ANALYSIS_FAILED";
+    }
+  };
