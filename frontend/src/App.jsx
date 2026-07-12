@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { registerUser, loginUser } from './api'; // API fonksiyonlarımızı dahil ettik
 
 const SvgIcons = {
   Assistant: () => (
@@ -35,13 +36,64 @@ function App() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   
-  // Bildirimlerin olup olmadığını kontrol eden state (Şu an bildirim yok = false)
   const [hasNotifications, setHasNotifications] = useState(false);
-  
   const [activeModal, setActiveModal] = useState(null); 
   const [robotChecked, setRobotChecked] = useState(false);
 
+  // Form Verileri ve API Durum Yönetimi
+  const [formData, setFormData] = useState({
+    fullname: '',
+    email: '',
+    password: '',
+    university: ''
+  });
+  const [authError, setAuthError] = useState('');
+  const [authSuccess, setAuthSuccess] = useState('');
+  const [currentUser, setCurrentUser] = useState(null); // Giriş yapan kullanıcının verisi
+
   const changeLanguage = (lng) => { i18n.changeLanguage(lng); };
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // FORM GÖNDERME (API BAĞLANTISI) FONKSİYONU
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthSuccess('');
+
+    try {
+      if (isRegister) {
+        // Kayıt Olma İsteyi
+        const data = await registerUser({
+          fullname: formData.fullname,
+          email: formData.email,
+          password: formData.password,
+          university: formData.university || null // Okul girilmediyse null gider[cite: 1]
+        });
+        localStorage.setItem('token', data.access_token);
+        setAuthSuccess('Kayıt işlemi başarıyla tamamlandı!');
+        setCurrentUser({ email: formData.email, fullname: formData.fullname });
+        setTimeout(() => setShowAuthForm(false), 1500);
+      } else {
+        // Giriş Yapma İsteyi
+        const data = await loginUser({
+          email: formData.email,
+          password: formData.password
+        });
+        localStorage.setItem('token', data.access_token);
+        setAuthSuccess('Giriş başarılı! Yönlendiriliyorsunuz...');
+        setCurrentUser({ email: formData.email, fullname: 'Kullanıcı' });
+        setTimeout(() => setShowAuthForm(false), 1500);
+      }
+    } catch (error) {
+      setAuthError(error);
+    }
+  };
 
   const theme = {
     bg: isDark ? '#080c14' : '#f8fafc',
@@ -87,7 +139,6 @@ function App() {
         </div>
         
         <div style={{ display: 'flex', gap: '20px' }}>
-          {/* ANA SAYFA BUTONU */}
           <button 
             onClick={() => { setShowAuthForm(false); setShowProfile(false); setShowNotifications(false); }} 
             title={t('back_home')}
@@ -95,13 +146,11 @@ function App() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           </button>
           
-          {/* BİLDİRİM BUTONU VE AÇILIR MENÜSÜ */}
           <div style={{ position: 'relative' }}>
             <button 
               onClick={() => { setShowNotifications(!showNotifications); setShowProfile(false); }} 
               style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: theme.iconBg, border: 'none', color: theme.textMain, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-              {/* Kırmızı Bildirim Noktası (Sadece hasNotifications true ise görünür) */}
               {hasNotifications && (
                 <span style={{ position: 'absolute', top: '10px', right: '12px', width: '8px', height: '8px', backgroundColor: '#ef4444', borderRadius: '50%', border: `2px solid ${theme.iconBg}` }}></span>
               )}
@@ -118,7 +167,6 @@ function App() {
             )}
           </div>
 
-          {/* GECE / GÜNDÜZ MODU BUTONU */}
           <button onClick={() => setIsDark(!isDark)} style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: theme.iconBg, border: `1px solid ${theme.primary}`, color: theme.textMain, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             {isDark ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>}
           </button>
@@ -143,14 +191,20 @@ function App() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
                   <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold', color: '#fff' }}>?</div>
                   <div>
-                    <div style={{ fontWeight: 'bold', fontSize: '15px', color: theme.textMain }}>{t('guest')}</div>
-                    <div style={{ fontSize: '12px', color: theme.textMuted }}>{t('not_logged_in')}</div>
+                    <div style={{ fontWeight: 'bold', fontSize: '15px', color: theme.textMain }}>{currentUser ? currentUser.fullname : t('guest')}</div>
+                    <div style={{ fontSize: '12px', color: theme.textMuted }}>{currentUser ? currentUser.email : t('not_logged_in')}</div>
                   </div>
                 </div>
                 <hr style={{ borderColor: theme.border, margin: '10px 0' }} />
-                <button onClick={() => { setShowAuthForm(true); setIsRegister(false); setShowProfile(false); }} style={{ width: '100%', padding: '10px', backgroundColor: theme.primary, color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-                   {t('login')} / {t('register')}
-                </button>
+                {currentUser ? (
+                  <button onClick={() => setCurrentUser(null)} style={{ width: '100%', padding: '10px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                    Çıkış Yap
+                  </button>
+                ) : (
+                  <button onClick={() => { setShowAuthForm(true); setIsRegister(false); setShowProfile(false); }} style={{ width: '100%', padding: '10px', backgroundColor: theme.primary, color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                    {t('login')} / {t('register')}
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -279,28 +333,32 @@ function App() {
             </div>
           </>
         ) : (
-          /* GİRİŞ / KAYIT FORMU */
+          /* GİRİŞ / KAYIT FORMU - API ENTEGRASYONLU */
           <div style={{ maxWidth: '440px', margin: '30px auto', backgroundColor: theme.cardBg, padding: '40px', borderRadius: '16px', border: `1px solid ${theme.border}`, textAlign: appDirection === 'rtl' ? 'right' : 'left' }}>
             <h3 style={{ textAlign: 'center', marginBottom: '24px', fontSize: '24px', fontWeight: 'bold', color: theme.textMain }}>
               {isRegister ? t('register') : t('login')}
             </h3>
+
+            {/* Hata ve Başarı Mesaj Gösterimi */}
+            {authError && <div style={{ backgroundColor: '#fef2f2', color: '#991b1b', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', fontWeight: '500', textAlign: 'center' }}>{authError}</div>}
+            {authSuccess && <div style={{ backgroundColor: '#ecfdf5', color: '#065f46', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '14px', fontWeight: '500', textAlign: 'center' }}>{authSuccess}</div>}
             
-            <form style={{ display: 'grid', gap: '18px' }}>
+            <form onSubmit={handleAuthSubmit} style={{ display: 'grid', gap: '18px' }}>
               {isRegister && (
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', color: theme.textMuted, fontSize: '14px', fontWeight: 'bold' }}>{t('fullname')}</label>
-                  <input type="text" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMain, boxSizing: 'border-box' }} required />
+                  <input type="text" name="fullname" value={formData.fullname} onChange={handleInputChange} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMain, boxSizing: 'border-box' }} required />
                 </div>
               )}
 
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: theme.textMuted, fontSize: '14px', fontWeight: 'bold' }}>{t('email')}</label>
-                <input type="email" placeholder="name@domain.com" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMain, boxSizing: 'border-box' }} required />
+                <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="name@domain.com" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMain, boxSizing: 'border-box' }} required />
               </div>
 
               <div style={{ position: 'relative' }}>
                 <label style={{ display: 'block', marginBottom: '8px', color: theme.textMuted, fontSize: '14px', fontWeight: 'bold' }}>{t('password')}</label>
-                <input type="password" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMain, boxSizing: 'border-box' }} required />
+                <input type="password" name="password" value={formData.password} onChange={handleInputChange} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMain, boxSizing: 'border-box' }} required />
                 <div style={{ textAlign: 'right', marginTop: '6px' }}>
                   <span style={{ fontSize: '12px', color: theme.primary, cursor: 'pointer', textDecoration: 'underline' }}>{t('forgot_password')}</span>
                 </div>
@@ -310,7 +368,7 @@ function App() {
                 <>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: theme.textMuted, fontSize: '14px', fontWeight: 'bold' }}>{t('university_select')}</label>
-                    <select style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMuted, boxSizing: 'border-box' }}>
+                    <select name="university" value={formData.university} onChange={handleInputChange} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: `1px solid ${theme.border}`, backgroundColor: theme.bg, color: theme.textMuted, boxSizing: 'border-box' }}>
                       <option value="">-- {t('university_select')} --</option>
                       <option value="un">Université de N'Djaména</option>
                       <option value="ukf">Université King Faisal (UKF) de N'Djaména</option>
@@ -357,9 +415,9 @@ function App() {
             
             <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px', color: theme.textMuted }}>
               {!isRegister ? (
-                <>{t('no_account')}{' '}<span onClick={() => setIsRegister(true)} style={{ color: theme.primary, cursor: 'pointer', fontWeight: 'bold', textDecoration: 'underline' }}>{t('register')}</span></>
+                <>{t('no_account')}{' '}<span onClick={() => { setIsRegister(true); setAuthError(''); setAuthSuccess(''); }} style={{ color: theme.primary, cursor: 'pointer', fontWeight: 'bold', textDecoration: 'underline' }}>{t('register')}</span></>
               ) : (
-                <>{t('have_account')}{' '}<span onClick={() => setIsRegister(false)} style={{ color: theme.primary, cursor: 'pointer', fontWeight: 'bold', textDecoration: 'underline' }}>{t('login')}</span></>
+                <>{t('have_account')}{' '}<span onClick={() => { setIsRegister(false); setAuthError(''); setAuthSuccess(''); }} style={{ color: theme.primary, cursor: 'pointer', fontWeight: 'bold', textDecoration: 'underline' }}>{t('login')}</span></>
               )}
             </div>
 
@@ -403,7 +461,7 @@ function App() {
         </div>
       </footer>
 
-      {/* 4. SABİT GÖRÜŞ LAMBASI - DAHA DA YUKARIDA (130px) */}
+      {/* 4. SABİT GÖRÜŞ LAMBASI */}
       <div style={{ position: 'fixed', bottom: '130px', [appDirection === 'rtl' ? 'left' : 'right']: '40px', zIndex: 100 }}>
         <button onClick={() => setShowFeedbackModal(true)} style={{ width: '54px', height: '54px', borderRadius: '50%', backgroundColor: '#eab308', color: '#000000', border: 'none', cursor: 'pointer', boxShadow: '0 4px 20px rgba(234, 179, 8, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
           💡
